@@ -1,12 +1,8 @@
 services:
   - type: web
     name: QLKS
-    env: dotnet
+    env: docker
     repo: https://github.com/tangocphiphilhu-122000550/QLKS_Nhom3
     branch: main
-    buildCommand: dotnet build
-    startCommand: dotnet run --project QLKS/QLKS.csproj
-    envVars:
-      - key: ASPNETCORE_URLS
-        value: http://0.0.0.0:10000
+    dockerfilePath: QLKS/Dockerfile  # hoặc ./Dockerfile nếu ở gốc repo
     plan: free

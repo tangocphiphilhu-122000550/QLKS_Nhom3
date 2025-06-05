@@ -1,16 +1,19 @@
-# Stage 1: Build
+# build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-COPY ./*.csproj ./
+COPY *.sln .
+COPY QLKS/*.csproj ./QLKS/
 RUN dotnet restore
 
-COPY . ./
-RUN dotnet publish -c Release -o /out
+COPY QLKS/. ./QLKS/
+WORKDIR /app/QLKS
+RUN dotnet publish -c Release -o out
 
-# Stage 2: Run
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+# runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=build /out ./
-
+COPY --from=build /app/QLKS/out ./
+ENV ASPNETCORE_URLS=http://+:10000
+EXPOSE 10000
 ENTRYPOINT ["dotnet", "QLKS.dll"]
