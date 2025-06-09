@@ -1,0 +1,51 @@
+# Thư mục của Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+*.log
+
+# Các file tạm, cache
+*.tmp
+*.temp
+*.bak
+*.cache
+*.dbmdl
+
+# Các file của NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+
+# Thư mục cấu hình ẩn của hệ thống
+*.DS_Store
+*.vscode/
+Thumbs.db
+
+# File publish
+publish/
+*.Publish.xml
+
+# Các file secrets, user settings
+appsettings.*.json
+secrets.json
+
+# Node modules nếu dùng React ở frontend
+node_modules/
+
+# Tệp môi trường (nếu có)
+.env
+.env.*
+
+# Thư viện từ EF Scaffold (nếu không muốn đưa vào Git)
+Migrations/
+
+# Tệp SQLite (nếu có dùng)
+*.db
+*.sqlite
