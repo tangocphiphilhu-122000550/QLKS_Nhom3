@@ -43,7 +43,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+         [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpGet("{MaPhong}")]
         public async Task<IActionResult> GetById(string MaPhong)
         {
@@ -201,7 +201,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpGet("trang-thai/{trangThai}")]
         public async Task<IActionResult> GetByTrangThai(string trangThai, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -241,7 +241,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpPut("{maPhong}/trang-thai")]
         public async Task<IActionResult> UpdateTrangThai(string maPhong, [FromQuery] string trangThai)
         {
@@ -289,7 +289,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpGet("loai-phong/{maLoaiPhong}")]
         public async Task<IActionResult> GetByLoaiPhong(int maLoaiPhong, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -343,7 +343,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+         [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpGet("{maPhong}/trang-thai-dat-phong")]
         public async Task<IActionResult> IsRoomAvailable(string maPhong, DateTime startDate, DateTime endDate)
         {
