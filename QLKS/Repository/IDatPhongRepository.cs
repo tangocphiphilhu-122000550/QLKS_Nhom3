@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using QLKS.Data;
 using QLKS.Models;
 using System;
@@ -15,7 +15,7 @@ namespace QLKS.Repository
         Task AddVMAsync(List<CreateDatPhongVM> datPhongVMs, List<int> maKhList);
         Task UpdateVMAsync(int maDatPhong, UpdateDatPhongVM datPhongVM);
         Task<bool> DeleteByMaDatPhongAsync(int maDatPhong);
-        Task UpdateDatPhongTrangThaiByMaPhongAsync(string maPhong, string trangThai);
+        Task UpdateDatPhongTrangThaiByMaDatPhongAsync(int maDatPhong, string trangThai);
     }
 
     public class DatPhongRepository : IDatPhongRepository
@@ -314,11 +314,8 @@ namespace QLKS.Repository
             return true;
         }
 
-        public async Task UpdateDatPhongTrangThaiByMaPhongAsync(string maPhong, string trangThai)
+        public async Task UpdateDatPhongTrangThaiByMaDatPhongAsync(int maDatPhong, string trangThai)
         {
-            if (string.IsNullOrEmpty(maPhong))
-                throw new ArgumentException("Mã phòng không được để trống.");
-
             if (string.IsNullOrEmpty(trangThai))
                 throw new ArgumentException("Trạng thái không được để trống.");
 
@@ -328,26 +325,22 @@ namespace QLKS.Repository
             if (!validTrangThaiDatPhong.Contains(trangThai, StringComparer.OrdinalIgnoreCase))
                 throw new ArgumentException("Trạng thái không hợp lệ. Chỉ cho phép: Đang sử dụng, Hủy, Hoàn thành, Đã đặt.");
 
-            var relatedBookings = await _context.DatPhongs
-                .Where(dp => dp.MaPhong == maPhong && dp.IsActive == true && dp.TrangThai != "Hủy")
-                .ToListAsync();
+            var booking = await _context.DatPhongs
+                .FirstOrDefaultAsync(dp => dp.MaDatPhong == maDatPhong && dp.IsActive == true);
 
-            if (!relatedBookings.Any())
-                throw new ArgumentException($"Không tìm thấy đặt phòng hợp lệ nào cho phòng {maPhong} để cập nhật trạng thái.");
+            if (booking == null)
+                throw new ArgumentException($"Không tìm thấy đặt phòng với mã {maDatPhong} hoặc đã bị ẩn.");
 
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    foreach (var booking in relatedBookings)
-                    {
-                        booking.TrangThai = trangThai;
-                        _context.DatPhongs.Update(booking);
-                    }
+                    booking.TrangThai = trangThai;
+                    _context.DatPhongs.Update(booking);
                     await _context.SaveChangesAsync();
 
                     // Cập nhật trạng thái phòng
-                    await UpdatePhongStatusAsync(maPhong);
+                    await UpdatePhongStatusAsync(booking.MaPhong);
 
                     await transaction.CommitAsync();
                 }
