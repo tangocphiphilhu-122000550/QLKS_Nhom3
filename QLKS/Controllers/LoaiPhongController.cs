@@ -41,7 +41,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpGet("{maLoaiPhong}")]
         public async Task<IActionResult> GetById(int maLoaiPhong)
         {
@@ -113,7 +113,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "QuanLy,NhanVien")]
+        [Authorize(Roles = "QuanLy")]
         [HttpPut("{maLoaiPhong}")]
         public async Task<IActionResult> EditLoaiPhong(int maLoaiPhong, [FromBody] LoaiPhongVM loaiPhongVM)
         {
