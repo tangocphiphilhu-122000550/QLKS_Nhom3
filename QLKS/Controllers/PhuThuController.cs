@@ -23,51 +23,20 @@ namespace QLKS.Controllers
         {
             try
             {
-                var phuThus = await _phuThuRepository.GetAllPhuThu(pageNumber, pageSize);
+                var result = await _phuThuRepository.GetAllPhuThu(pageNumber, pageSize);
                 return Ok(new
                 {
+                    success = true,
                     message = "Lấy danh sách phụ thu thành công!",
-                    data = phuThus
+                    data = result
                 });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    message = "Lỗi khi lấy danh sách phụ thu: " + ex.Message,
-                    data = (object)null
-                });
-            }
-        }
-
-        [HttpGet("loai-phong/{maLoaiPhong}")]
-         [Authorize(Roles = "NhanVien,QuanLy")]
-        public async Task<IActionResult> GetPhuThuByLoaiPhong(int maLoaiPhong)
-        {
-            try
-            {
-                var phuThus = await _phuThuRepository.GetPhuThuByLoaiPhong(maLoaiPhong);
-                if (phuThus == null || !phuThus.Any())
-                {
-                    return NotFound(new
-                    {
-                        message = "Không tìm thấy phụ thu cho loại phòng này.",
-                        data = (object)null
-                    });
-                }
-
-                return Ok(new
-                {
-                    message = "Tìm kiếm phụ thu thành công!",
-                    data = phuThus
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
-                {
-                    message = "Lỗi khi tìm phụ thu: " + ex.Message,
-                    data = (object)null
+                    success = false,
+                    message = "Lỗi khi lấy danh sách phụ thu: " + ex.Message
                 });
             }
         }
@@ -78,27 +47,38 @@ namespace QLKS.Controllers
         {
             try
             {
-                var phuThuVM = await _phuThuRepository.AddPhuThu(model);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Dữ liệu không hợp lệ",
+                        errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
+                    });
+                }
+
+                var result = await _phuThuRepository.AddPhuThu(model);
                 return Ok(new
                 {
+                    success = true,
                     message = "Thêm phụ thu thành công!",
-                    data = phuThuVM
+                    data = result
                 });
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new
                 {
-                    message = ex.Message,
-                    data = (object)null
+                    success = false,
+                    message = ex.Message
                 });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    message = "Lỗi khi thêm phụ thu: " + ex.Message,
-                    data = (object)null
+                    success = false,
+                    message = "Lỗi khi thêm phụ thu: " + ex.Message
                 });
             }
         }
@@ -109,36 +89,46 @@ namespace QLKS.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Dữ liệu không hợp lệ",
+                        errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
+                    });
+                }
+
                 var result = await _phuThuRepository.UpdatePhuThu(maPhuThu, model);
                 if (!result)
                 {
                     return NotFound(new
                     {
-                        message = "Không tìm thấy phụ thu để cập nhật.",
-                        data = (object)null
+                        success = false,
+                        message = "Không tìm thấy phụ thu để cập nhật."
                     });
                 }
 
                 return Ok(new
                 {
-                    message = "Cập nhật phụ thu thành công!",
-                    data = (object)null
+                    success = true,
+                    message = "Cập nhật phụ thu thành công!"
                 });
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(new
                 {
-                    message = ex.Message,
-                    data = (object)null
+                    success = false,
+                    message = ex.Message
                 });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    message = "Lỗi khi cập nhật phụ thu: " + ex.Message,
-                    data = (object)null
+                    success = false,
+                    message = "Lỗi khi cập nhật phụ thu: " + ex.Message
                 });
             }
         }
@@ -154,25 +144,25 @@ namespace QLKS.Controllers
                 {
                     return NotFound(new
                     {
-                        message = "Không tìm thấy phụ thu để xóa.",
-                        data = (object)null
+                        success = false,
+                        message = "Không tìm thấy phụ thu để xóa."
                     });
                 }
 
                 return Ok(new
                 {
-                    message = "Xóa phụ thu thành công!",
-                    data = (object)null
+                    success = true,
+                    message = "Xóa phụ thu thành công!"
                 });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new
                 {
-                    message = "Lỗi khi xóa phụ thu: " + ex.Message,
-                    data = (object)null
+                    success = false,
+                    message = "Lỗi khi xóa phụ thu: " + ex.Message
                 });
             }
         }
     }
-} 
+}
