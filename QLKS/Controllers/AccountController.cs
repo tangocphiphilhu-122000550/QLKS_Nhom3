@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using QLKS.Models;
 using QLKS.Repository;
 using QLKS.Data;
