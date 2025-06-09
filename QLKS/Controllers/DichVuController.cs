@@ -42,7 +42,7 @@ namespace QLKS.Controllers
         }
 
         [HttpGet("search")]
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         public async Task<IActionResult> GetDichVuByName([FromQuery] string tenDichVu)
         {
             try
