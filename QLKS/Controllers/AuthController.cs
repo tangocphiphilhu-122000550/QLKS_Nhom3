@@ -197,43 +197,44 @@ namespace QLKS.Controllers
         [Authorize(Roles = "QuanLy")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO model)
         {
-            var (nhanVien, token, refreshToken) = await _repository.Login(model.Email, model.OldPassword);
-            if (nhanVien == null)
+            var existingUser = await _repository.GetNhanVienByEmail(model.Email);
+            if (existingUser == null)
             {
-                var existingUser = await _repository.GetNhanVienByEmail(model.Email);
-                if (existingUser != null && !existingUser.IsActive)
-                {
-                    return Unauthorized(new
-                    {
-                        message = "Tài khoản đã bị vô hiệu hóa.",
-                        data = (object)null
-                    });
-                }
-                return Unauthorized(new
-                {
-                    message = "Email hoặc mật khẩu cũ không đúng.",
-                    data = (object)null
-                });
-            }
-
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
-            byte[] passwordBytes = Encoding.UTF8.GetBytes(hashedPassword);
-
-            var success = await _repository.UpdatePassword(model.Email, passwordBytes);
-            if (!success)
+                return NotFound(new
             {
-                return BadRequest(new
-                {
-                    message = "Không thể đổi mật khẩu.",
-                    data = (object)null
-                });
-            }
-
-            return Ok(new
-            {
-                message = "Đổi mật khẩu thành công!",
-                data = (object)null
+            message = "Không tìm thấy tài khoản.",
+            data = (object)null
             });
         }
+
+        if (!existingUser.IsActive)
+        {
+            return Unauthorized(new
+        {
+            message = "Tài khoản đã bị vô hiệu hóa.",
+            data = (object)null
+        });
+    }
+
+    string hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+    byte[] passwordBytes = Encoding.UTF8.GetBytes(hashedPassword);
+
+    var success = await _repository.UpdatePassword(model.Email, passwordBytes);
+    if (!success)
+    {
+        return BadRequest(new
+        {
+            message = "Không thể đổi mật khẩu.",
+            data = (object)null
+        });
+    }
+
+    return Ok(new
+    {
+        message = "Đổi mật khẩu thành công!",
+        data = (object)null
+    });
+}
+
     }
 }
