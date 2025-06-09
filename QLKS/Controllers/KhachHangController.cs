@@ -41,7 +41,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpGet("{hoTen}")]
         public async Task<IActionResult> GetKhachHangByName([FromQuery] string hoTen)
         {
@@ -82,7 +82,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpPost]
         public async Task<IActionResult> AddKhachHang([FromBody] KhachHangVM model)
         {
@@ -113,7 +113,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpPut("{hoTen}")]
         public async Task<IActionResult> UpdateKhachHang(string hoTen, [FromBody] KhachHangVM model)
         {
