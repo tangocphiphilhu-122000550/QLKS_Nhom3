@@ -24,12 +24,11 @@
         public string NewPassword { get; set; } = null!;
     }
 
-    public class ChangePasswordDTO
-    {
-        public string Email { get; set; } = null!;
-        public string OldPassword { get; set; } = null!;
-        public string NewPassword { get; set; } = null!;
-    }
+ public class ChangePasswordDTO
+{
+    public string Email { get; set; }
+    public string NewPassword { get; set; }
+}
 
     public class AuthResponse
     {
