@@ -41,7 +41,7 @@ namespace QLKS.Controllers
         }
 
         [HttpGet("loai-phong/{maLoaiPhong}")]
-        [Authorize(Roles = "NhanVien")]
+         [Authorize(Roles = "NhanVien,QuanLy")]
         public async Task<IActionResult> GetPhuThuByLoaiPhong(int maLoaiPhong)
         {
             try
