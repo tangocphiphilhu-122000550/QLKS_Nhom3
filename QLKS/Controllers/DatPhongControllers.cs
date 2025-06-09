@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using QLKS.Models;
 using QLKS.Repository;
 using System;
@@ -43,7 +44,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien,QuanLy")]
+        [Authorize(Roles = "NhanVien")]
         [HttpGet("{maDatPhong}")]
         public async Task<ActionResult<DatPhongVM>> GetById(int maDatPhong)
         {
@@ -73,7 +74,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien,QuanLy")]
+        [Authorize(Roles = "NhanVien")]
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] CreateDatPhongRequest request)
         {
@@ -111,7 +112,7 @@ namespace QLKS.Controllers
             }
         }
 
-       [Authorize(Roles = "NhanVien,QuanLy")]
+        [Authorize(Roles = "NhanVien")]
         [HttpPut("{maDatPhong}")]
         public async Task<ActionResult> Update(int maDatPhong, [FromBody] UpdateDatPhongVM datPhongVM)
         {
@@ -179,14 +180,14 @@ namespace QLKS.Controllers
             }
         }
 
-         [Authorize(Roles = "NhanVien,QuanLy")]
-        [HttpPut("rooms/{maPhong}/status")]
-        public async Task<ActionResult> UpdatePhongTrangThai([FromRoute] string maPhong, [FromBody] string trangThai)
+        [Authorize(Roles = "NhanVien,QuanLy")]
+        [HttpPut("bookings/{maDatPhong}/status")]
+        public async Task<ActionResult> UpdateDatPhongTrangThai([FromRoute] int maDatPhong, [FromBody] string trangThai)
         {
-            if (string.IsNullOrEmpty(maPhong))
+            if (maDatPhong <= 0)
                 return BadRequest(new
                 {
-                    message = "Mã phòng không được để trống.",
+                    message = "Mã đặt phòng không hợp lệ.",
                     data = (object)null
                 });
 
@@ -199,10 +200,10 @@ namespace QLKS.Controllers
 
             try
             {
-                await _datPhongRepository.UpdateDatPhongTrangThaiByMaPhongAsync(maPhong, trangThai);
+                await _datPhongRepository.UpdateDatPhongTrangThaiByMaDatPhongAsync(maDatPhong, trangThai);
                 return Ok(new
                 {
-                    message = $"Cập nhật trạng thái đặt phòng cho phòng {maPhong} thành '{trangThai}' thành công!",
+                    message = $"Cập nhật trạng thái đặt phòng mã {maDatPhong} thành '{trangThai}' thành công!",
                     data = (object)null
                 });
             }
