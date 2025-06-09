@@ -148,6 +148,7 @@ namespace QLKS.Repository
 
         public async Task<(string NewToken, string NewRefreshToken)> RefreshToken(string token, string refreshToken)
         {
+            // Tìm token với IsRevoked = true
             var tokenEntity = await _context.Tokens
                 .FirstOrDefaultAsync(t => t.Token1 == token && t.RefreshToken == refreshToken && t.IsRevoked);
 
@@ -161,9 +162,6 @@ namespace QLKS.Repository
 
             if (tokenEntity.RefreshTokenExpiry < currentTime)
             {
-                // Đặt IsRevoked thành false khi refresh token hết hạn
-                tokenEntity.IsRevoked = false;
-                await _context.SaveChangesAsync();
                 throw new Exception("Refresh token đã hết hạn. Vui lòng đăng nhập lại.");
             }
 
@@ -176,15 +174,11 @@ namespace QLKS.Repository
                 throw new Exception("Nhân viên không tồn tại hoặc tài khoản đã bị vô hiệu hóa.");
             }
 
-            // Vô hiệu hóa token cũ bằng cách đặt IsRevoked thành false
-            tokenEntity.IsRevoked = false;
-            await _context.SaveChangesAsync();
-
-            // Tạo token mới và refresh token mới
+            // 1. Tạo token mới
             var newToken = GenerateJwtToken(nhanVien);
             var newRefreshToken = GenerateRefreshToken();
 
-            // Tạo bản ghi mới trong bảng Tokens
+            // 2. Lưu token mới vào database với IsRevoked = true
             var newTokenEntity = new Token
             {
                 MaNv = nhanVien.MaNv,
@@ -196,7 +190,12 @@ namespace QLKS.Repository
                 IsRevoked = true
             };
 
+            // 3. Thêm token mới
             _context.Tokens.Add(newTokenEntity);
+            await _context.SaveChangesAsync();
+
+            // 4. Set IsRevoked = false cho token cũ
+            tokenEntity.IsRevoked = false;
             await _context.SaveChangesAsync();
 
             return (newToken, newRefreshToken);
