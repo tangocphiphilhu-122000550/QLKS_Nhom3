@@ -7,7 +7,6 @@ namespace QLKS.Repository
     public interface IPhuThuRepository
     {
         Task<PagedPhuThuResponse> GetAllPhuThu(int pageNumber, int pageSize);
-        Task<List<PhuThuVM>> GetPhuThuByLoaiPhong(int maLoaiPhong);
         Task<PhuThuVM> AddPhuThu(PhuThuVM phuThu);
         Task<bool> UpdatePhuThu(int maPhuThu, PhuThuVM phuThuVM);
         Task<bool> DeletePhuThu(int maPhuThu);
@@ -27,9 +26,7 @@ namespace QLKS.Repository
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 10;
 
-            var query = _context.PhuThus
-                .Include(pt => pt.MaLoaiPhongNavigation)
-                .AsNoTracking();
+            var query = _context.PhuThus.AsNoTracking();
 
             var totalItems = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
@@ -37,13 +34,12 @@ namespace QLKS.Repository
             var phuThus = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Select(pt => new PhuThuVM
+                .Select(pt => new PhuThuGetall
                 {
                     MaPhuThu = pt.MaPhuThu,
                     MaLoaiPhong = pt.MaLoaiPhong,
                     GiaPhuThuTheoNgay = pt.GiaPhuThuTheoNgay,
-                    GiaPhuThuTheoGio = pt.GiaPhuThuTheoGio,
-                    TenLoaiPhong = pt.MaLoaiPhongNavigation.TenLoaiPhong
+                    GiaPhuThuTheoGio = pt.GiaPhuThuTheoGio
                 })
                 .ToListAsync();
 
@@ -57,37 +53,13 @@ namespace QLKS.Repository
             };
         }
 
-        public async Task<List<PhuThuVM>> GetPhuThuByLoaiPhong(int maLoaiPhong)
-        {
-            return await _context.PhuThus
-                .Include(pt => pt.MaLoaiPhongNavigation)
-                .AsNoTracking()
-                .Where(pt => pt.MaLoaiPhong == maLoaiPhong)
-                .Select(pt => new PhuThuVM
-                {
-                    MaPhuThu = pt.MaPhuThu,
-                    MaLoaiPhong = pt.MaLoaiPhong,
-                    GiaPhuThuTheoNgay = pt.GiaPhuThuTheoNgay,
-                    GiaPhuThuTheoGio = pt.GiaPhuThuTheoGio,
-                    TenLoaiPhong = pt.MaLoaiPhongNavigation.TenLoaiPhong
-                })
-                .ToListAsync();
-        }
-
         public async Task<PhuThuVM> AddPhuThu(PhuThuVM phuThuVM)
         {
             // Validate input
-            if (!phuThuVM.MaLoaiPhong.HasValue || 
+            if (!phuThuVM.MaLoaiPhong.HasValue ||
                 (!phuThuVM.GiaPhuThuTheoNgay.HasValue && !phuThuVM.GiaPhuThuTheoGio.HasValue))
             {
                 throw new ArgumentException("Mã loại phòng và ít nhất một loại giá phụ thu là bắt buộc.");
-            }
-
-            // Validate if LoaiPhong exists
-            var loaiPhong = await _context.LoaiPhongs.FindAsync(phuThuVM.MaLoaiPhong);
-            if (loaiPhong == null)
-            {
-                throw new ArgumentException("Loại phòng không tồn tại.");
             }
 
             var phuThu = new PhuThu
@@ -100,14 +72,18 @@ namespace QLKS.Repository
             _context.PhuThus.Add(phuThu);
             await _context.SaveChangesAsync();
 
-            phuThuVM.MaPhuThu = phuThu.MaPhuThu;
-            phuThuVM.TenLoaiPhong = loaiPhong.TenLoaiPhong;
-            return phuThuVM;
+            // Chỉ trả về các thông tin đã nhập, không cần MaPhuThu
+            return new PhuThuVM
+            {
+                MaLoaiPhong = phuThu.MaLoaiPhong,
+                GiaPhuThuTheoNgay = phuThu.GiaPhuThuTheoNgay,
+                GiaPhuThuTheoGio = phuThu.GiaPhuThuTheoGio
+            };
         }
 
         public async Task<bool> UpdatePhuThu(int maPhuThu, PhuThuVM phuThuVM)
         {
-            if (!phuThuVM.MaLoaiPhong.HasValue || 
+            if (!phuThuVM.MaLoaiPhong.HasValue ||
                 (!phuThuVM.GiaPhuThuTheoNgay.HasValue && !phuThuVM.GiaPhuThuTheoGio.HasValue))
             {
                 throw new ArgumentException("Mã loại phòng và ít nhất một loại giá phụ thu là bắt buộc.");
@@ -117,13 +93,6 @@ namespace QLKS.Repository
             if (existingPhuThu == null)
             {
                 return false;
-            }
-
-            // Validate if LoaiPhong exists
-            var loaiPhong = await _context.LoaiPhongs.FindAsync(phuThuVM.MaLoaiPhong);
-            if (loaiPhong == null)
-            {
-                throw new ArgumentException("Loại phòng không tồn tại.");
             }
 
             existingPhuThu.MaLoaiPhong = phuThuVM.MaLoaiPhong;
@@ -147,4 +116,4 @@ namespace QLKS.Repository
             return true;
         }
     }
-} 
+}
