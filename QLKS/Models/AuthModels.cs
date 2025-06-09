@@ -55,6 +55,8 @@
         public string? GioiTinh { get; set; }
         public string? DiaChi { get; set; }
         public DateOnly? NgaySinh { get; set; }
+        public bool? HasPassword { get; set; }
+
     }
 
     public class UpdateAccountDTO

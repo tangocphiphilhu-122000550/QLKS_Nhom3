@@ -54,7 +54,8 @@ namespace QLKS.Repository
                     Email = nv.Email,
                     GioiTinh = nv.GioiTinh,
                     DiaChi = nv.DiaChi,
-                    NgaySinh = nv.NgaySinh
+                    NgaySinh = nv.NgaySinh,
+                    HasPassword = nv.HasPassword ?? false // Thêm trường này
                 }).ToList(),
                 TotalItems = totalItems,
                 TotalPages = totalPages,

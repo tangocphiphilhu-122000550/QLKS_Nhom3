@@ -25,6 +25,8 @@ public partial class NhanVien
 
     public bool IsActive { get; set; }
 
+    public bool? HasPassword { get; set; }
+
     public virtual ICollection<DatPhong> DatPhongs { get; set; } = new List<DatPhong>();
 
     public virtual ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
