@@ -46,7 +46,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+         [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpGet("khach-hang/{tenKhachHang}")]
         public async Task<ActionResult<PagedHoaDonResponse>> GetByTenKhachHang(string tenKhachHang, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -77,7 +77,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+         [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpPost]
         public async Task<ActionResult<HoaDonVM>> Create([FromBody] CreateHoaDonVM hoaDonVM)
         {
@@ -115,7 +115,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpPost("{maHoaDon}/export-pdf")]
         public async Task<IActionResult> ExportPdf([FromBody] ExportHoaDonRequest request)
         {
@@ -155,7 +155,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+        [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpPost("{maHoaDon}/export-pdf/email")]
         public async Task<IActionResult> ExportPdfWithEmail([FromBody] ExportHoaDonWithEmailRequest request)
         {
@@ -206,7 +206,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+         [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpPut("{maHoaDon}/trang-thai")]
         public async Task<IActionResult> UpdateTrangThaiByTenKhachHang(string tenKhachHang, [FromBody] UpdateHoaDonVM updateVM)
         {
@@ -251,7 +251,7 @@ namespace QLKS.Controllers
             }
         }
 
-        [Authorize(Roles = "NhanVien")]
+         [Authorize(Roles = "NhanVien,QuanLy")]
         [HttpPut("{maHoaDon}/phuong-thuc-thanh-toan")]
         public async Task<IActionResult> UpdatePhuongThucThanhToanByTenKhachHang(string tenKhachHang, [FromBody] UpdatePhuongThucThanhToanVM updateVM)
         {
