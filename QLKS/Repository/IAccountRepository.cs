@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using QLKS.Data;
 using QLKS.Models;
 using System;
@@ -30,20 +30,24 @@ namespace QLKS.Repository
 
         public async Task<PagedAccountResponse> GetAllAccounts(int pageNumber, int pageSize)
         {
+            // Đảm bảo pageNumber và pageSize hợp lệ
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 10;
 
-            var query = _context.NhanViens
-                .Where(nv => nv.IsActive);
+            // Lấy toàn bộ nhân viên (không lọc IsActive)
+            var query = _context.NhanViens.AsQueryable();
 
+            // Tổng số bản ghi và tổng số trang
             var totalItems = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
+            // Lấy danh sách nhân viên cho trang hiện tại
             var accounts = await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
+            // Trả về dữ liệu đã phân trang và map sang DTO
             return new PagedAccountResponse
             {
                 Accounts = accounts.Select(nv => new Account
@@ -55,7 +59,8 @@ namespace QLKS.Repository
                     GioiTinh = nv.GioiTinh,
                     DiaChi = nv.DiaChi,
                     NgaySinh = nv.NgaySinh,
-                    HasPassword = nv.HasPassword ?? false // Thêm trường này
+                    HasPassword = nv.HasPassword ?? false,
+                    IsActive = nv.IsActive
                 }).ToList(),
                 TotalItems = totalItems,
                 TotalPages = totalPages,
@@ -63,6 +68,7 @@ namespace QLKS.Repository
                 PageSize = pageSize
             };
         }
+
 
         public async Task<List<NhanVien>> GetByNameNhanVien(string hoTen)
         {
