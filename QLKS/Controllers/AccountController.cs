@@ -86,37 +86,29 @@ namespace QLKS.Controllers
                 });
             }
         }
-
         [Authorize(Roles = "QuanLy")]
         [HttpPost]
-        public async Task<IActionResult> AddAccount([FromBody] Account model)
+        public async Task<IActionResult> AddAccount([FromBody] AddAccountDTO model)
         {
             try
             {
-                var nhanVien = new NhanVien
-                {
-                    HoTen = model.HoTen,
-                    Email = model.Email,
-                    SoDienThoai = model.SoDienThoai,
-                    MaVaiTro = model.MaVaiTro,
-                    GioiTinh = model.GioiTinh,
-                    DiaChi = model.DiaChi,
-                    NgaySinh = model.NgaySinh
-                };
-
-                var addedAccount = await _repository.AddAccount(nhanVien);
+                var addedAccount = await _repository.AddAccount(model);
                 return Ok(new
                 {
                     message = "Thêm tài khoản thành công!",
-                    data = new { Email = addedAccount.Email }
+                    data = new
+                    {
+                        Email = addedAccount.Email,
+                        HoTen = addedAccount.HoTen
+                    }
                 });
             }
             catch (DbUpdateException ex)
             {
-                var innerException = ex.InnerException?.Message ?? ex.Message;
+                var innerMessage = ex.InnerException?.Message ?? ex.Message;
                 return BadRequest(new
                 {
-                    message = "Lỗi khi thêm tài khoản: " + ex.Message,
+                    message = "Lỗi khi thêm tài khoản vào cơ sở dữ liệu: " + innerMessage,
                     data = (object)null
                 });
             }
@@ -129,6 +121,7 @@ namespace QLKS.Controllers
                 });
             }
         }
+
 
         [Authorize(Roles = "QuanLy")]
         [HttpPut("{email}")]
