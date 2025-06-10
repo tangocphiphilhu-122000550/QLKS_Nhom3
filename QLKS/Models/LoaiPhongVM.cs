@@ -1,10 +1,11 @@
-﻿namespace QLKS.Models
+namespace QLKS.Models
 {
     // ViewModel cơ bản cho loại phòng
     public class LoaiPhongVM
     {
         public string TenLoaiPhong { get; set; } = null!;
         public decimal GiaCoBan { get; set; }
+        public decimal? GiaPhongNgay { get; set; }
         public int SoNguoiToiDa { get; set; }
     }
 
