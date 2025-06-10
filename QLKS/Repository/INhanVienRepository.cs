@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using QLKS.Data;
 using QLKS.Helpers;
@@ -50,7 +50,8 @@ namespace QLKS.Repository
 
             try
             {
-                existingUser.MatKhau = nhanVien.MatKhau; 
+                existingUser.MatKhau = nhanVien.MatKhau;
+                existingUser.HasPassword = true;
                 await _context.SaveChangesAsync();
                 return existingUser;
             }
@@ -59,6 +60,7 @@ namespace QLKS.Repository
                 throw new Exception($"Lỗi khi lưu dữ liệu: {ex.InnerException?.Message ?? ex.Message}");
             }
         }
+
 
         public async Task<(NhanVien NhanVien, string Token, string RefreshToken)> Login(string email, string matKhau)
         {
