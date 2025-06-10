@@ -13,7 +13,7 @@ namespace QLKS.Repository
     {
         Task<PagedAccountResponse> GetAllAccounts(int pageNumber, int pageSize);
         Task<List<NhanVien>> GetByNameNhanVien(string hoTen);
-        Task<NhanVien> AddAccount(NhanVien nhanVien);
+        Task<NhanVien> AddAccount(AddAccountDTO dto);
         Task<bool> UpdateAccount(string email, UpdateAccountDTO nhanVien);
         Task<bool> DeleteAccount(string email); // Giữ tên nhưng đổi thành vô hiệu hóa
         Task<bool> RestoreAccount(string email); // Thêm phương thức mới
@@ -78,28 +78,37 @@ namespace QLKS.Repository
                 .ToListAsync();
         }
 
-        public async Task<NhanVien> AddAccount(NhanVien nhanVien)
+        public async Task<NhanVien> AddAccount(AddAccountDTO dto)
         {
-            // Kiểm tra email trùng
             var existingUser = await _context.NhanViens
-                .FirstOrDefaultAsync(nv => nv.Email == nhanVien.Email);
+                .FirstOrDefaultAsync(nv => nv.Email == dto.Email);
             if (existingUser != null)
                 throw new Exception("Email đã được sử dụng.");
 
-            // Kiểm tra vai trò
             var vaiTro = await _context.VaiTros
-                .FirstOrDefaultAsync(vt => vt.MaVaiTro == nhanVien.MaVaiTro);
+                .FirstOrDefaultAsync(vt => vt.MaVaiTro == dto.MaVaiTro);
             if (vaiTro == null)
                 throw new Exception("Mã vai trò không tồn tại.");
 
-            // Kiểm tra các trường bắt buộc
-            if (string.IsNullOrEmpty(nhanVien.HoTen))
+            if (string.IsNullOrEmpty(dto.HoTen))
                 throw new Exception("Họ tên là bắt buộc.");
-            if (string.IsNullOrEmpty(nhanVien.Email))
+            if (string.IsNullOrEmpty(dto.Email))
                 throw new Exception("Email là bắt buộc.");
 
-            nhanVien.IsActive = true;
-            nhanVien.MatKhau = null; // Để null, sẽ cập nhật sau qua Register
+            var nhanVien = new NhanVien
+            {
+                HoTen = dto.HoTen,
+                MaVaiTro = dto.MaVaiTro,
+                SoDienThoai = dto.SoDienThoai,
+                Email = dto.Email,
+                GioiTinh = dto.GioiTinh,
+                DiaChi = dto.DiaChi,
+                NgaySinh = dto.NgaySinh,
+                IsActive = true, 
+                MatKhau = null,
+                HasPassword = false 
+            };
+
             try
             {
                 _context.NhanViens.Add(nhanVien);
@@ -111,6 +120,8 @@ namespace QLKS.Repository
                 throw new Exception($"Lỗi khi lưu dữ liệu: {ex.InnerException?.Message ?? ex.Message}");
             }
         }
+
+
 
         public async Task<bool> UpdateAccount(string email, UpdateAccountDTO nhanVien)
         {
