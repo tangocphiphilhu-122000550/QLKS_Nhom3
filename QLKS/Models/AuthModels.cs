@@ -1,4 +1,4 @@
-﻿namespace QLKS.Models
+namespace QLKS.Models
 {
     public class LoginDTO
     {
@@ -55,6 +55,8 @@
         public string? DiaChi { get; set; }
         public DateOnly? NgaySinh { get; set; }
         public bool? HasPassword { get; set; }
+        public bool IsActive { get; set; }
+
 
     }
 
