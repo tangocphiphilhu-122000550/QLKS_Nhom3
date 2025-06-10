@@ -56,8 +56,6 @@ namespace QLKS.Models
         public DateOnly? NgaySinh { get; set; }
         public bool? HasPassword { get; set; }
         public bool IsActive { get; set; }
-
-
     }
 
     public class UpdateAccountDTO
@@ -70,6 +68,18 @@ namespace QLKS.Models
         public string? DiaChi { get; set; }
         public DateTime? NgaySinh { get; set; }
     }
+
+    public class AddAccountDTO
+    {
+        public string HoTen { get; set; } = null!;
+        public int MaVaiTro { get; set; }
+        public string? SoDienThoai { get; set; }
+        public string Email { get; set; } = null!;
+        public string? GioiTinh { get; set; }
+        public string? DiaChi { get; set; }
+        public DateOnly? NgaySinh { get; set; }
+    }
+
     public class PagedAccountResponse
     {
         public List<Account> Accounts { get; set; }
