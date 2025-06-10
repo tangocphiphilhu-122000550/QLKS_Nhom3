@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using QLKS.Data;
 using QLKS.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +43,7 @@ namespace QLKS.Repository
                     MaLoaiPhong = lp.MaLoaiPhong,
                     TenLoaiPhong = lp.TenLoaiPhong,
                     GiaCoBan = lp.GiaCoBan,
+                    GiaPhongNgay = lp.GiaPhongNgay,
                     SoNguoiToiDa = lp.SoNguoiToiDa
                 })
                 .ToListAsync();
@@ -72,6 +73,7 @@ namespace QLKS.Repository
                 MaLoaiPhong = loaiPhong.MaLoaiPhong,
                 TenLoaiPhong = loaiPhong.TenLoaiPhong,
                 GiaCoBan = loaiPhong.GiaCoBan,
+                GiaPhongNgay = loaiPhong.GiaPhongNgay,
                 SoNguoiToiDa = loaiPhong.SoNguoiToiDa
             };
         }
@@ -90,6 +92,7 @@ namespace QLKS.Repository
             {
                 TenLoaiPhong = loaiPhongVM.TenLoaiPhong,
                 GiaCoBan = loaiPhongVM.GiaCoBan,
+                GiaPhongNgay = loaiPhongVM.GiaPhongNgay,
                 SoNguoiToiDa = loaiPhongVM.SoNguoiToiDa
             };
 
@@ -101,6 +104,7 @@ namespace QLKS.Repository
                 MaLoaiPhong = loaiPhong.MaLoaiPhong,
                 TenLoaiPhong = loaiPhong.TenLoaiPhong,
                 GiaCoBan = loaiPhong.GiaCoBan,
+                GiaPhongNgay = loaiPhong.GiaPhongNgay,
                 SoNguoiToiDa = loaiPhong.SoNguoiToiDa
             };
         }
@@ -125,6 +129,7 @@ namespace QLKS.Repository
 
             loaiPhong.TenLoaiPhong = loaiPhongVM.TenLoaiPhong;
             loaiPhong.GiaCoBan = loaiPhongVM.GiaCoBan;
+            loaiPhong.GiaPhongNgay = loaiPhongVM.GiaPhongNgay;
             loaiPhong.SoNguoiToiDa = loaiPhongVM.SoNguoiToiDa;
 
             await _context.SaveChangesAsync();
