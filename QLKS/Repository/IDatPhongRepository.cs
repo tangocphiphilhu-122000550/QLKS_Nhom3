@@ -247,22 +247,40 @@ namespace QLKS.Repository
                             throw new ArgumentException($"Phòng {existingDatPhong.MaPhong} đã được đặt trong khoảng thời gian từ {existingDatPhong.NgayNhanPhong} đến {existingDatPhong.NgayTraPhong} hoặc nằm trong khoảng dọn dẹp 2 tiếng.");
                     }
 
+                    // --- SỬA ĐOẠN NÀY ---
                     if (datPhongVM.MaKhList != null && datPhongVM.MaKhList.Any())
                     {
-                        var khachHangs = await _context.KhachHangs
+                        // 1. Lấy tất cả khách hàng cũ của đặt phòng này
+                        var oldKhachHangs = await _context.KhachHangs
+                            .Where(kh => kh.MaDatPhong == maDatPhong && kh.IsActive == true)
+                            .ToListAsync();
+
+                        // 2. Những khách hàng KHÔNG còn trong danh sách mới thì gán MaDatPhong = null
+                        foreach (var oldKh in oldKhachHangs)
+                        {
+                            if (!datPhongVM.MaKhList.Contains(oldKh.MaKh))
+                            {
+                                oldKh.MaDatPhong = null;
+                                _context.KhachHangs.Update(oldKh);
+                            }
+                        }
+
+                        // 3. Cập nhật MaDatPhong cho các khách hàng mới
+                        var newKhachHangs = await _context.KhachHangs
                             .Where(kh => datPhongVM.MaKhList.Contains(kh.MaKh) && kh.IsActive == true)
                             .ToListAsync();
 
-                        if (khachHangs.Count != datPhongVM.MaKhList.Count)
+                        if (newKhachHangs.Count != datPhongVM.MaKhList.Count)
                             throw new ArgumentException("Một hoặc nhiều khách hàng trong danh sách không tồn tại hoặc đã bị ẩn.");
 
-                        foreach (var khachHang in khachHangs)
+                        foreach (var khachHang in newKhachHangs)
                         {
                             khachHang.MaDatPhong = maDatPhong;
                             _context.KhachHangs.Update(khachHang);
                         }
                         await _context.SaveChangesAsync();
                     }
+                    // --- HẾT SỬA ---
 
                     await UpdatePhongStatusAsync(existingDatPhong.MaPhong);
 
